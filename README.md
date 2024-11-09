@@ -560,3 +560,171 @@ GET https://localhost:port/api/polls
 ---
 
 **Note**: While in-memory storage works for development, implement proper database storage for production use.
+
+
+# Managing Multiple GET Endpoints
+
+## Problem Description
+```mermaid
+graph TD
+    A[Multiple GET Endpoints] -->|Same Base Route| B[Routing Conflict]
+    B --> C[500 Internal Server Error]
+    
+    D[Solution Approaches] --> E[Route Attribute]
+    D --> F[HTTP Verb Template]
+    
+    E --> G[api/polls/getAll]
+    F --> H[api/polls]
+```
+
+## Problematic Code Example
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class PollsController : ControllerBase
+{
+    private readonly List<Poll> _polls = new();
+
+    [HttpGet]  // Conflict!
+    public IActionResult GetAll()
+    {
+        return Ok(_polls);
+    }
+
+    [HttpGet]  // Conflict!
+    public IActionResult Test()
+    {
+        return Ok(_polls);
+    }
+}
+```
+
+## Solution Approaches
+
+### 1. Using Route Attribute
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class PollsController : ControllerBase
+{
+    [HttpGet]
+    [Route("getAll")]  // Results in: api/polls/getAll
+    public IActionResult GetAll()
+    {
+        return Ok(_polls);
+    }
+
+    [HttpGet]
+    [Route("test")]    // Results in: api/polls/test
+    public IActionResult Test()
+    {
+        return Ok(_polls);
+    }
+}
+```
+
+### 2. Using HTTP Verb Template
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class PollsController : ControllerBase
+{
+    [HttpGet("getAll")]  // Cleaner syntax for: api/polls/getAll
+    public IActionResult GetAll()
+    {
+        return Ok(_polls);
+    }
+
+    [HttpGet("test")]   // Cleaner syntax for: api/polls/test
+    public IActionResult Test()
+    {
+        return Ok(_polls);
+    }
+}
+```
+
+## Route Comparison
+
+| Approach | Syntax | Result | Best For |
+|----------|--------|--------|----------|
+| Route Attribute | `[Route("getAll")]` | `api/polls/getAll` | Complex routing rules |
+| HTTP Verb Template | `[HttpGet("getAll")]` | `api/polls/getAll` | Simple, clean routes |
+
+## Common Mistakes to Avoid
+
+1. **Duplicate Routes**
+   ```csharp
+   // DON'T DO THIS
+   [HttpGet]
+   [HttpGet]  // Conflict!
+   ```
+
+2. **Ambiguous Routes**
+   ```csharp
+   // DON'T DO THIS
+   [HttpGet("items")]
+   [HttpGet("items/")]  // Ambiguous!
+   ```
+
+3. **Missing Route Specifications**
+   ```csharp
+   // DON'T DO THIS
+   [HttpGet]
+   [HttpGet]  // No route differentiation
+   ```
+
+## Best Practices
+
+1. **Route Naming**
+   - Use meaningful names
+   - Follow REST conventions
+   - Keep routes lowercase
+   - Use hyphens for multi-word routes
+
+2. **Route Structure**
+   - Keep routes simple
+   - Use consistent patterns
+   - Avoid deep nesting
+
+3. **Documentation**
+   ```csharp
+   /// <summary>
+   /// Gets all polls
+   /// </summary>
+   [HttpGet("getAll")]
+   public IActionResult GetAll()
+   ```
+
+## Testing Routes
+
+### Swagger
+```http
+GET /api/polls/getAll
+GET /api/polls/test
+```
+
+### Postman
+1. Create separate requests for each endpoint
+2. Verify different URLs
+3. Test for proper responses
+
+## Troubleshooting
+
+| Issue | Possible Cause | Solution |
+|-------|---------------|----------|
+| 500 Error | Duplicate routes | Add unique route templates |
+| 404 Error | Incorrect route | Verify route template |
+| Ambiguous Match | Similar routes | Make routes distinct |
+
+## Next Steps
+- Add route parameters
+- Implement query strings
+- Add route constraints
+- Configure route templates
+- Add response types
+
+---
+
+**Note**: Choose the routing approach that best fits your project's conventions and maintain consistency throughout your API.
+
+The HTTP Verb Template approach (`[HttpGet("getAll")]`) is generally preferred for its clarity and conciseness unless you need complex routing rules.
