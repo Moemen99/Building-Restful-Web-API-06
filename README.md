@@ -415,3 +415,148 @@ public class PollsController : ControllerBase
 ---
 
 **Note**: Remember to maintain consistency in your routing patterns and follow RESTful conventions when designing your API endpoints.
+
+
+
+# Implementing Your First API Endpoint
+
+## Project Structure Setup
+
+### Adding the Model
+1. Create new folder: `Models`
+2. Add new class: `Poll.cs`
+
+```csharp
+public class Poll
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+}
+```
+
+### Controller Implementation
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class PollsController : ControllerBase
+{
+    // In-memory database simulation
+    private readonly List<Poll> _polls = new();
+
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        return Ok(_polls);
+    }
+}
+```
+
+## Testing Approaches
+
+```mermaid
+graph TD
+    A[API Testing Methods] --> B[Visual Studio HTTP Files]
+    A --> C[Endpoints Explorer]
+    A --> D[Postman]
+    
+    B --> E[SurveyBasket.http]
+    C --> F[Generate HTTP Request]
+    D --> G[Survey Basket Collection]
+    G --> H[Polls Folder]
+    H --> I[GetAll Request]
+```
+
+### 1. Visual Studio HTTP Files
+- Create `SurveyBasket.http` file
+- Structure:
+```http
+GET https://localhost:port/api/polls
+```
+- Features:
+  - Send request directly from VS
+  - View response status, time, body, headers
+  - Multiple requests in one file
+
+### 2. Endpoints Explorer
+| Feature | Description |
+|---------|-------------|
+| Scanning | Automatically scans all endpoints |
+| Generation | Can generate HTTP request files |
+| Organization | Groups by controller |
+| Visibility | Shows HTTP verbs and routes |
+
+### 3. Postman Setup
+
+1. **Collection Creation**
+   ```
+   Collection: Survey Basket
+   └── Folder: Polls
+       └── Request: GetAll
+   ```
+
+2. **Request Configuration**
+   - Method: GET
+   - URL: `{{baseUrl}}/api/polls`
+   - Save in Polls folder
+
+## Testing Flow
+
+### Local Testing Steps
+1. Launch application
+2. Choose testing method:
+   - VS HTTP file
+   - Endpoints Explorer
+   - Postman
+3. Send request
+4. Verify empty array response (initial state)
+
+### Response Structure
+```json
+{
+    "statusCode": 200,
+    "body": []
+}
+```
+
+## Best Practices
+
+1. **Endpoint Organization**
+   - Use meaningful names
+   - Group related endpoints
+   - Maintain consistent routing
+
+2. **Testing Strategy**
+   - Test with multiple tools
+   - Save request templates
+   - Organize collections logically
+
+3. **Code Structure**
+   - Separate models from controllers
+   - Use initialization for properties
+   - Return appropriate status codes
+
+## Common Testing Scenarios
+
+| Scenario | Tool | Advantage |
+|----------|------|-----------|
+| Quick Testing | VS HTTP Files | Integrated in IDE |
+| Development | Endpoints Explorer | Auto-discovery |
+| Comprehensive | Postman | Advanced features |
+
+## Next Steps
+- Add data manipulation endpoints
+- Implement error handling
+- Add request validation
+- Configure response formatting
+- Set up automated testing
+
+## Notes for Future Implementation
+- Move models to separate project
+- Implement proper database
+- Add service layer
+- Implement repository pattern
+
+---
+
+**Note**: While in-memory storage works for development, implement proper database storage for production use.
