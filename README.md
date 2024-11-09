@@ -264,3 +264,154 @@ graph TD
 ---
 
 **Note**: Remember to never commit sensitive information like connection strings or API keys. Use Azure DevOps secure variables for sensitive data.
+
+
+
+# API Controller Implementation Guide
+
+## Creating the Controller
+
+### Setup Steps
+1. In Solution Explorer:
+   - Right-click Controllers folder
+   - Add → Controller
+   - Select "API Controller - Empty"
+   - Name it `PollsController` (plural)
+
+```mermaid
+graph TD
+    A[Solution Explorer] -->|Right Click| B[Controllers Folder]
+    B -->|Add| C[New Controller]
+    C -->|Select| D[API Controller - Empty]
+    D -->|Name| E[PollsController]
+    
+    F[Controller Structure] -->|Inherits| G[ControllerBase]
+    G -->|Contains| H[Core API Functionality]
+    
+    I[Program.cs Setup] -->|Service Registration| J[AddControllers]
+    I -->|Route Configuration| K[MapControllers]
+```
+
+## Controller Architecture
+
+### Class Hierarchy
+| Class | Purpose | Used In |
+|-------|----------|---------|
+| ControllerBase | Abstract base class with core API functionality | Web API |
+| Controller | Inherits from ControllerBase + adds MVC features | MVC |
+| PollsController | Our API controller inheriting from ControllerBase | Our Project |
+
+### Key Attributes
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class PollsController : ControllerBase
+{
+    // Controller actions go here
+}
+```
+
+### Controller Base vs Controller
+- **ControllerBase**:
+  - Abstract class containing essential API functionality
+  - Used for API controllers
+  - Lightweight and focused on API operations
+  
+- **Controller**:
+  - Inherits from ControllerBase
+  - Adds MVC-specific features (views, etc.)
+  - Not needed for API projects
+
+## Program.cs Configuration
+
+### Service Registration
+```csharp
+builder.Services.AddControllers();
+```
+- Registers controller services
+- Essential for controller functionality
+- Must be called before building the application
+
+### Route Configuration
+```csharp
+app.MapControllers();
+```
+- Scans all controllers in the project
+- Builds route table
+- Maps incoming requests to appropriate controllers
+
+## Routing System
+
+### API Route Structure
+- Base URL: `https://localhost:port`
+- API Prefix: `/api`
+- Controller Segment: `/[controller]`
+- Full Example: `https://localhost:5001/api/polls`
+
+### Route Attribution
+```csharp
+[Route("api/[controller]")]  // Class-level route
+public class PollsController : ControllerBase
+{
+    [HttpGet]  // Action-level route
+    public IActionResult Get()
+    {
+        // Implementation
+    }
+}
+```
+
+## Key Differences from MVC
+
+| Feature | Web API | MVC |
+|---------|---------|-----|
+| Base Class | ControllerBase | Controller |
+| View Support | No | Yes |
+| Route Definition | Attribute-based | Can use conventional routing |
+| Response Format | JSON/XML by default | Views/Partial Views |
+
+## Best Practices
+
+1. **Naming Conventions**
+   - Use plural nouns for controller names
+   - Keep domain models singular
+   - Use descriptive action names
+
+2. **Route Design**
+   - Use consistent route patterns
+   - Include API version when needed
+   - Keep routes RESTful
+
+3. **Controller Organization**
+   - One responsibility per controller
+   - Group related actions together
+   - Keep controllers focused and lean
+
+## Common Implementation
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class PollsController : ControllerBase
+{
+    private readonly ILogger<PollsController> _logger;
+    
+    public PollsController(ILogger<PollsController> logger)
+    {
+        _logger = logger;
+    }
+    
+    // Action methods go here
+}
+```
+
+## Next Steps
+- Implement CRUD operations
+- Add action methods
+- Configure model binding
+- Set up validation
+- Implement error handling
+
+---
+
+**Note**: Remember to maintain consistency in your routing patterns and follow RESTful conventions when designing your API endpoints.
