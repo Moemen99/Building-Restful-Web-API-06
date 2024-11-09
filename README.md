@@ -728,3 +728,152 @@ GET /api/polls/test
 **Note**: Choose the routing approach that best fits your project's conventions and maintain consistency throughout your API.
 
 The HTTP Verb Template approach (`[HttpGet("getAll")]`) is generally preferred for its clarity and conciseness unless you need complex routing rules.
+
+
+
+# Implementing GetById Endpoint with Test Data
+
+## Basic Implementation
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class PollsController : ControllerBase
+{
+    private readonly List<Poll> _polls = new()
+    {
+        new Poll 
+        { 
+            Id = 1, 
+            Title = "Poll1", 
+            Description = "My First Poll" 
+        }
+    };
+
+    [HttpGet("{id}")]
+    public IActionResult Get(int id)
+    {
+        var poll = _polls.SingleOrDefault(x => x.Id == id);
+        return poll is null ? NotFound() : Ok(poll);
+    }
+}
+```
+
+## Flow Diagram
+```mermaid
+graph TD
+    A[Incoming Request] -->|api/polls/1| B[Route Parameter Binding]
+    B -->|id = 1| C[Find Poll]
+    C -->|Check Result| D{Poll Found?}
+    D -->|Yes| E[Return 200 OK with Poll]
+    D -->|No| F[Return 404 NotFound]
+```
+
+## Key Components
+
+### 1. Test Data Setup
+```csharp
+private readonly List<Poll> _polls = new()
+{
+    new Poll 
+    { 
+        Id = 1, 
+        Title = "Poll1", 
+        Description = "My First Poll" 
+    }
+};
+```
+
+### 2. Route Template
+```csharp
+[HttpGet("{id}")]  // Defines URL parameter
+```
+
+### 3. Parameter Binding
+```csharp
+public IActionResult Get(int id)  // Route value mapped to parameter
+```
+
+### 4. Response Logic
+Two equivalent approaches:
+
+```csharp
+// Verbose approach
+if (poll is null)
+    return NotFound();
+return Ok(poll);
+
+// Concise approach using ternary operator
+return poll is null ? NotFound() : Ok(poll);
+```
+
+## Expected Behaviors
+
+| Request | Response Code | Response Body |
+|---------|--------------|---------------|
+| GET api/polls/1 | 200 | Poll object |
+| GET api/polls/999 | 404 | None |
+
+## Test Examples
+
+### Successful Request
+```http
+GET api/polls/1
+
+Response 200 OK:
+{
+    "id": 1,
+    "title": "Poll1",
+    "description": "My First Poll"
+}
+```
+
+### Not Found Request
+```http
+GET api/polls/999
+
+Response 404 Not Found
+```
+
+## Implementation Notes
+
+1. **Route Parameter**
+   - Uses curly braces `{id}` for parameter binding
+   - Automatically maps to method parameter
+
+2. **LINQ Query**
+   - `SingleOrDefault` returns null if not found
+   - Matches on Id property
+
+3. **Response**
+   - Uses ternary operator for concise response
+   - Returns appropriate status codes
+
+## Best Practices
+
+1. **Use Pattern Matching**
+   ```csharp
+   return poll is null ? NotFound() : Ok(poll);
+   ```
+
+2. **Strong Typing**
+   ```csharp
+   public ActionResult<Poll> Get(int id)
+   ```
+
+3. **Response Types**
+   ```csharp
+   [ProducesResponseType(200, Type = typeof(Poll))]
+   [ProducesResponseType(404)]
+   ```
+
+## Next Steps
+- Add validation for negative IDs
+- Implement error handling
+- Add logging
+- Configure response caching
+- Add more test data
+
+---
+
+**Note**: This implementation uses in-memory test data. In a production environment, you would typically retrieve data from a database.
