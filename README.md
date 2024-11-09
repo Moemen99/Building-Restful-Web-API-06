@@ -163,3 +163,104 @@ This project follows an incremental development approach, focusing on building c
 2. Configure database
 3. Run migrations
 4. Start development server
+
+
+
+
+# Setting Up Azure DevOps for Your Project
+
+## Prerequisites
+- Visual Studio installed
+- Microsoft account
+- Azure DevOps account
+
+## Step-by-Step Setup Guide
+
+### 1. Microsoft Account Setup
+- Sign in to Visual Studio using your Microsoft account
+- Navigate to [Visual Studio DevOps](https://dev.azure.com)
+- Sign in with the same Microsoft account
+
+### 2. Azure DevOps Organization Setup
+```mermaid
+graph TD
+    A[Visit dev.azure.com] -->|Sign in| B[Create/Select Organization]
+    B --> C[Create New Project]
+    C --> D[Configure Project Settings]
+    D --> E[Access Repos Section]
+```
+
+### 3. Project Creation in Azure DevOps
+1. Click "New Project"
+2. Enter project details:
+   - Name
+   - Description (optional)
+   - Visibility (Public/Private)
+   - Version control (Git)
+3. Click "Create"
+
+### 4. Repository Setup
+| Step | Location | Action |
+|------|-----------|--------|
+| 1 | Azure DevOps | Navigate to Repos > Files |
+| 2 | Visual Studio | Open your project |
+| 3 | Visual Studio | Go to Git Changes |
+| 4 | Visual Studio | Click "Create Git Repository" |
+
+### 5. Connecting Local Repository to Azure DevOps
+1. In Azure DevOps:
+   - Navigate to your repository
+   - Click "Clone"
+   - Copy the remote URL
+
+2. In Visual Studio:
+   ```
+   Git Changes -> Create Git Repository -> Existing Remote
+   Paste the copied URL
+   Click Create and Push
+   ```
+
+### 6. Authentication
+- You may be prompted to sign in again
+- Use your Microsoft account credentials
+- Verify the connection is established
+
+### 7. Verification
+1. Return to Azure DevOps portal
+2. Navigate to Repos > Files
+3. Verify your project files are now visible
+
+## Common Issues and Solutions
+
+| Issue | Solution |
+|-------|----------|
+| Authentication Failed | Re-enter credentials in Visual Studio |
+| Push Failed | Check remote URL and permissions |
+| Repository Not Found | Verify organization and project names |
+
+## Best Practices
+
+1. **Initial Setup**
+   - Initialize with .gitignore
+   - Add a README.md
+   - Configure branch policies
+
+2. **Commit Strategy**
+   - Make meaningful commits
+   - Use clear commit messages
+   - Commit frequently
+
+3. **Branch Management**
+   - Create development branches
+   - Protect main branch
+   - Use feature branches
+
+## Next Steps
+- Set up build pipelines
+- Configure release management
+- Add team members
+- Set up work items and boards
+
+---
+
+**Note**: Remember to never commit sensitive information like connection strings or API keys. Use Azure DevOps secure variables for sensitive data.
